@@ -1,6 +1,26 @@
 # source: https://genome.sph.umich.edu/wiki/Code_Sample:_Generating_Manhattan_Plots_in_R
 
 library(lattice)
+
+#' Performs a Manhattan plot.
+#' @param chr Chromosome vector of all variants
+#' @param pos Position vector of all variants
+#' @param pvalue P-value vector of all variants
+#' @param sig.level significance threshold
+#' @param annotate annotations for SNPs
+#' @param ann.default default annotation
+#' @param should.thin should use downsampling
+#' @param thin.pos.places decimals used for thinning (position)
+#' @param thin.logp.places decimals used for thinning (p-value)
+#' @param xlab X axis label
+#' @param ylab Y axis label
+#' @param col color vector
+#' @param panel.extra extra info
+#' @param pch plotting character
+#' @param cex character size
+#' @param ... further arguments to xyplot, e.g. "main"
+#' @export
+#' @importFrom lattice axis.default panel.abline panel.axis panel.superpose trellis.par.get xyplot
 manhattan.plot<-function(chr, pos, pvalue, 
 	sig.level=NA, annotate=NULL, ann.default=list(),
 	should.thin=T, thin.pos.places=2, thin.logp.places=2, 

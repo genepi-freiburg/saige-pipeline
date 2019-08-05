@@ -1,0 +1,11 @@
+Package: saigeutils
+Title: SAIGE pipeline for single variant and gene-based tests
+Version: 0.1
+Authors@R: person("Matthias", "Wuttke", email = "matthias.wuttke@uniklinik-freiburg.de",
+                  role = c("aut", "cre"))
+Description: Tools for running and checking SAIGE associations. Includes QQ and Manhattan plots.
+Depends: R (>= 3.1.0)
+License: GPL
+LazyData: true
+Imports: lattice, gqq
+RoxygenNote: 6.1.1

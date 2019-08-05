@@ -1,3 +1,7 @@
+#' Calculates the lambda value.
+#' @param pval Vector of p-values
+#' @export
+#' @importFrom stats median qchisq
 calc_lambda <- function(pval) {
 	pval2 <- pval[!is.na(pval)]
 	if (length(pval2) == 0) {

@@ -49,8 +49,9 @@ print(paste("Lambda (unfiltered): ", lambda_overall, sep=""))
 
 pdf(out_pdf)
 
-manhattan.plot(overall$CHR, overall$POS, overall$p.value)
-#title(main=paste("Manhattan plot (unfiltered), n=", nrow(overall), sep=""))
+
+mh_title = paste("Manhattan plot (unfiltered), n=", nrow(overall), ", lambda=", round(lambda_overall, 3), sep="")
+manhattan.plot(overall$CHR, overall$POS, overall$p.value, main=mh_title)
 
 qq_plot(overall$p.value, highlight=-log10(5e-8))
 title(main=paste("QQ plot (unfiltered), n=", nrow(overall), ", lambda=", round(lambda_overall, 3), sep=""))
@@ -62,8 +63,8 @@ print(paste("Variants remaining: ", nrow(overall), sep=""))
 lambda_filter1 = calc_lambda(overall$p.value)
 print(paste("Lambda (MAF >1%, IMP >0.4): ", lambda_filter1, sep=""))
 
-manhattan.plot(overall$CHR, overall$POS, overall$p.value)
-#title(main=paste("Manhattan plot (MAF >1%, IMP >0.4), n=", nrow(overall), ", lambda=", round(lambda_filter1, 3), sep=""))
+mh_title = paste("Manhattan plot (MAF >1%, IMP >0.4), n=", nrow(overall), ", lambda=", round(lambda_filter1, 3), sep="")
+manhattan.plot(overall$CHR, overall$POS, overall$p.value, main =mh_title)
 
 qq_plot(overall$p.value, highlight=-log10(5e-8))
 title(main=paste("QQ plot (MAF >1%, IMP >0.4), n=", nrow(overall), ", lambda=", round(lambda_filter1, 3), sep=""))
@@ -75,8 +76,8 @@ print(paste("Variants remaining: ", nrow(overall), sep=""))
 lambda_filter2 = calc_lambda(overall$p.value)
 print(paste("Lambda (MAF >5%, IMP >0.8): ", lambda_filter2, sep=""))
 
-manhattan.plot(overall$CHR, overall$POS, overall$p.value)
-#title(main=paste("Manhattan plot (MAF >5%, IMP >0.8), n=", nrow(overall), ", lambda=", round(lambda_filter2, 3), sep=""))
+mh_title = paste("Manhattan plot (MAF >5%, IMP >0.8), n=", nrow(overall), ", lambda=", round(lambda_filter2, 3), sep="")
+manhattan.plot(overall$CHR, overall$POS, overall$p.value, main=mh_title)
 
 qq_plot(overall$p.value, highlight=-log10(5e-8))
 title(main=paste("QQ plot (MAF >5%, IMP >0.8), n=", nrow(overall), ", lambda=", round(lambda_filter2, 3), sep=""))

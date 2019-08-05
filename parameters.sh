@@ -23,7 +23,7 @@ TRAITTYPE_2=quantitative
 COVARCOLS_2=batch,age_crea_serum,sex_male,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10,PC11,PC12,PC13,PC14,PC15
 
 # output directory
-OUTPUT_DIR=Exome_50k/04_SAIGE/SAIGE/20190730_eGFR
+OUTPUT_DIR=Exome_50k/04_SAIGE/SAIGE/20190730_eGFR_pipeline
 
 # prefix for output files
 OUTPUT_PREFIX=ukb_
@@ -56,8 +56,8 @@ PLINK_FILE=Exome_50k/03_Merge_GWAS_WES/chip_single_file/ukb_cal_49796
 BGEN_FILE=Exome_50k/03_Merge_GWAS_WES/wes/wes_bgen/ukb_wes_efe-chr%CHR%.bgen
 
 # SAMPLE file 
-# absolute path
-SAMPLE_FILE=/data/studies/06_UKBB/Exome_50k/03_Merge_GWAS_WES/imputed/ukb_subset_chr22.sample 
+# relative to base directory
+SAMPLE_FILE=Exome_50k/03_Merge_GWAS_WES/imputed/ukb_subset_chr22.sample 
 
 # output data for every i-th SNP (2 = every second)
 NUM_LINES_OF_OUTPUT=2

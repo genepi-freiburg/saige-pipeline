@@ -156,73 +156,22 @@ do
 		echo "    2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 	done
 
+	# write plotting driver script
+	JOB_INDEX=$((JOB_INDEX+1))
+	printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
+	JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.sh"
+	LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.log"
+        echo "${JOB_FN}" >> ${ALL_JOBS_FN}
+
+        echo "#/bin/bash" > ${JOB_FN}
+        chmod 0755 ${JOB_FN}
+
+	echo "echo 'library(saigeutils)" >> ${JOB_FN}
+	echo "perform_qc_plots(\"${PREFIX}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt\"," >> ${JOB_FN}
+	echo "   \"${PREFIX}/${OUTPUT_DIR}/results/${PHENOTYPE}_qc.pdf\")' \\" >> ${JOB_FN}
+	echo " | R --vanilla 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
+
 done
 
 echo "Done"
-
-
-
-
-
-
-
-
-
-## parameters for SAIGE runs
-
-# Base directory
-BASE_DIRECTORY=/data/studies/06_UKBB
-
-# Path to phenotype file, relative to BASE_DIRECTORY, don't use '..'
-PHENO_FILE=/06_UKBB/Exome_50k/04_SAIGE/SAIGE/SAIGE_20190722_eGFR_chr22/ckdgen-UKBB_500k_phenoGWAS-EA.txt
-
-# name of the sample ID column in the phenotype file
-SAMPLE_ID_COL=IID
-
-# number of phenotypes to analyse (next block for each of them)
-PHENOTYPE_COUNT=2
-
-# first phenotype: column name, trait type (quantitative/binary), covariates
-PHENOTYPE_1=egfr_ckdepi_creat
-TRAITTYPE_1=quantitative
-COVARCOLS_1=batch,age_crea_serum,sex_male,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10,PC11,PC12,PC13,PC14,PC15
-
-# second phenotype
-PHENOTYPE_2=egfr_ckdepi_creacys
-TRAITTYPE_2=quantitative
-COVARCOLS_2=batch,age_crea_serum,sex_male,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10,PC11,PC12,PC13,PC14,PC15
-
-# output directory
-OUTPUT_DIR=/06_UKBB/Exome_50k/04_SAIGE/SAIGE/20190730_eGFR
-
-# prefix for output files
-OUTPUT_PREFIX=ukb_
-
-# number of threads
-NTHREADS=4
-
-# leave-one-chromosome-out mode (FALSE/TRUE)
-LOCO=FALSE
-
-# inverse normalize phenotype (FALSE/TRUE)
-INV_NORMALIZE=FALSE
-
-# SAIGE version (Docker container name)
-SAIGE_VERSION=wzhou88/saige:0.35.8.2
-
-# PLINK file with chip genotypes (used for null model)
-PLINK_FILE=/06_UKBB/Exome_50k/03_Merge_GWAS_WES/chip_single_file/ukb_cal_49796
-
-# BGEN file with imputed dosages or WES genotypes
-BGEN_FILE=/06_UKBB/Exome_50k/03_Merge_GWAS_WES/wes/wes_bgen/ukb_wes_efe-chr%CHR%.bgen
-
-# SAMPLE file
-SAMPLE_FILE=../../../03_Merge_GWAS_WES/imputed/ukb_subset_chr22.sample
-
-# output data for every second SNP
-NUM_LINES_OF_OUTPUT=2
-
-# additional options to pass to step 1 and/or 2
-STEP1_ADDITIONAL_OPTIONS=""
-STEP2_ADDITIONAL_OPTIONS=""
 

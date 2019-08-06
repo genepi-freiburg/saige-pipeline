@@ -49,7 +49,7 @@ perform_qc_plots <- function(file_pattern, out_pdf, file_sep=" ")
     lambda_overall = calc_lambda(overall$p.value)
     print(paste("Lambda (", label, "): ", lambda_overall, sep=""))
   
-    par(mfcol=c(5,2))
+    par(mfcol=c(6,2))
     
     boxplot(overall$BETA, 
             horizontal = T, 
@@ -71,6 +71,10 @@ perform_qc_plots <- function(file_pattern, out_pdf, file_sep=" ")
             horizontal = T, 
             xlab = paste("Allele 2 frequency (", label, "), n=", nrow(overall), sep=""))
       
+    boxplot(overall$N, 
+            horizontal = T, 
+            xlab = paste("Sample size (", label, "), n=", nrow(overall), sep=""))
+    
     hist(overall$BETA, 
          xlab = paste("Effect size (", label, ")", sep = ""),
          breaks = 100,
@@ -93,6 +97,11 @@ perform_qc_plots <- function(file_pattern, out_pdf, file_sep=" ")
     
     hist(overall$AF_Allele2, 
          xlab = paste("Allele 2 frequency (", label, ")", sep = ""),
+         breaks = 100,
+         main = "", ylab = "")
+    
+    hist(overall$N, 
+         xlab = paste("Sample size (", label, ")", sep = ""),
          breaks = 100,
          main = "", ylab = "")
     

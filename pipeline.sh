@@ -58,8 +58,9 @@ echo "Prepare directories and write sample file"
 JOB_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/jobs"
 LOGS_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/logs"
 NULL_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/nullModel"
+QC_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/qc"
 
-mkdir -p ${JOB_DIR} ${RESULTS_DIR} ${NULL_DIR} ${LOGS_DIR}
+mkdir -p ${JOB_DIR} ${QC_DIR} ${NULL_DIR} ${LOGS_DIR}
 
 cat ${BASE_DIRECTORY}/${SAMPLE_FILE} | \
         grep -v '#' | \
@@ -168,7 +169,7 @@ do
 
 	echo "echo 'library(saigeutils)" >> ${JOB_FN}
 	echo "perform_qc_plots(\"${PREFIX}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt\"," >> ${JOB_FN}
-	echo "   \"${PREFIX}/${OUTPUT_DIR}/results/${PHENOTYPE}_qc.pdf\")' \\" >> ${JOB_FN}
+	echo "   \"${PREFIX}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")' \\" >> ${JOB_FN}
 	echo " | R --vanilla 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 
 done

@@ -5,12 +5,12 @@
 \title{Performs box plots, histograms, Manhattan and QQ plot 
 (unfiltered, MAF >1\%/INF >0.4 and MAF >5\%/INF >0.8.}
 \usage{
-perform_qc_plots(file_pattern, out_pdf, file_sep = " ")
+perform_qc_plots(file_pattern, out_prefix, file_sep = " ")
 }
 \arguments{
 \item{file_pattern}{file name of results (\%CHR\% spaceholder)}
 
-\item{out_pdf}{output PDF file name}
+\item{out_prefix}{output file name prefix}
 
 \item{file_sep}{field separator}
 }

@@ -10,7 +10,7 @@ source("R/calc_lambda.R")
 #' @param file_sep field separator
 #' @export
 #' @importFrom grDevices dev.off pdf
-#' @importFrom graphics title
+#' @importFrom graphics title boxplot hist par
 #' @importFrom stats median qchisq
 #' @importFrom gqq qq_plot
 #' @importFrom utils head modifyList read.table

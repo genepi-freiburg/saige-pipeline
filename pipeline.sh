@@ -128,7 +128,7 @@ do
 	        JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-SPAtests-chr${CHR}-${PHENOTYPE}.sh"
 	        LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-SPAtests-chr${CHR}-${PHENOTYPE}.log"
 		echo "${JOB_FN}" >> ${ALL_JOBS_FN}
-	
+
 		echo "#/bin/bash" > ${JOB_FN}
 		chmod 0755 ${JOB_FN}
 
@@ -144,7 +144,7 @@ do
 	        echo "    --chrom=${CHR} \\" >> ${JOB_FN}
 	        echo "    --bgenFile=${PREFIX}/${BGEN_FN} \\" >> ${JOB_FN}
 	        echo "    --bgenFileIndex=${PREFIX}/${BGEN_FN}.bgi \\" >> ${JOB_FN}
-	        echo "    --sampleFile=${PREFIX}/my_sample_file.sample \\" >> ${JOB_FN}
+	        echo "    --sampleFile=${PREFIX}/${OUTPUT_DIR}/my_sample_file.sample \\" >> ${JOB_FN}
 	        echo "    --minMAF=0.0001 \\" >> ${JOB_FN}
 	        echo "    --minMAC=1 \\" >> ${JOB_FN}
 	        echo "    --GMMATmodelFile=${PREFIX}/${OUTPUT_DIR}/nullModel/${PHENOTYPE}.rda \\" >> ${JOB_FN}
@@ -167,9 +167,9 @@ do
         echo "#/bin/bash" > ${JOB_FN}
         chmod 0755 ${JOB_FN}
 
-	echo "echo 'library(saigeutils)" >> ${JOB_FN}
-	echo "perform_qc_plots(\"${PREFIX}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt\"," >> ${JOB_FN}
-	echo "   \"${PREFIX}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")' \\" >> ${JOB_FN}
+	echo "xvfb-run echo 'library(saigeutils)" >> ${JOB_FN}
+	echo "perform_qc_plots(\"${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt\"," >> ${JOB_FN}
+	echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")' \\" >> ${JOB_FN}
 	echo " | R --vanilla 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 
 done

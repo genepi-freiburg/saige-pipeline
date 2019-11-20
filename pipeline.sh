@@ -63,8 +63,8 @@ QC_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/qc"
 mkdir -p ${JOB_DIR} ${QC_DIR} ${NULL_DIR} ${LOGS_DIR}
 
 cat ${BASE_DIRECTORY}/${SAMPLE_FILE} | \
-        grep -v '#' | \
-        tail -n+2 > ${BASE_DIRECTORY}/${OUTPUT_DIR}/my_sample_file.sample
+        grep -v '#' \
+	> ${BASE_DIRECTORY}/${OUTPUT_DIR}/my_sample_file.sample
 
 ALL_JOBS_FN="${JOB_DIR}/000-ALL_JOBS.sh"
 echo "#/bin/bash" > ${ALL_JOBS_FN}
@@ -161,16 +161,17 @@ do
 	JOB_INDEX=$((JOB_INDEX+1))
 	printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
 	JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.sh"
+	JOB_R_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.R"
 	LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.log"
         echo "${JOB_FN}" >> ${ALL_JOBS_FN}
 
         echo "#/bin/bash" > ${JOB_FN}
         chmod 0755 ${JOB_FN}
+	echo "xvfb-run Rscript ${JOB_R_FN} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 
-	echo "xvfb-run echo 'library(saigeutils)" >> ${JOB_FN}
-	echo "perform_qc_plots(\"${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt\"," >> ${JOB_FN}
-	echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")' \\" >> ${JOB_FN}
-	echo " | R --vanilla 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
+	echo "library(saigeutils)" >> ${JOB_R_FN}
+	echo "perform_qc_plots(\"${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt\"," >> ${JOB_R_FN}
+	echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")" >> ${JOB_R_FN}
 
 done
 

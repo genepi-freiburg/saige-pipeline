@@ -50,8 +50,8 @@ perform_qc_plots <- function(file_pattern, out_prefix, file_sep=" ")
     print(paste("Lambda (", label, "): ", lambda_overall, sep = ""))
   
     # perform boxplots/histograms
-    png(paste(png_file_prefix, "_box_hist.png", sep = ""), width=1000, height=3000)
-    par(mfcol=c(6,2))
+    pdf(paste(png_file_prefix, "_box_hist.pdf", sep = ""))
+    par(mfcol=c(6,2), mar=rep(2,4), oma=rep(1,4))
     
     boxplot(overall$BETA, 
             horizontal = T, 
@@ -109,7 +109,7 @@ perform_qc_plots <- function(file_pattern, out_prefix, file_sep=" ")
     dev.off()
     
     # perform Manhattan plot
-    png(paste(png_file_prefix, "_manhattan.png", sep = ""), width=2000, height=1000)
+    png(paste(png_file_prefix, "_manhattan.png", sep = ""), width=1000, height=500)
     par(mfcol=c(1,1))
     mh_title = paste("Manhattan plot (", label, "), n=", nrow(overall), 
                      ", lambda=", round(lambda_overall, 3), sep = "")
@@ -117,7 +117,7 @@ perform_qc_plots <- function(file_pattern, out_prefix, file_sep=" ")
     dev.off()
     
     # perform QQ plot
-    png(paste(png_file_prefix, "_qq.png", sep = ""), width=1000, height=1000)
+    png(paste(png_file_prefix, "_qq.png", sep = ""), width=500, height=500)
     qq_plot(overall$p.value, highlight=-log10(5e-8))
     title(main=paste("QQ plot (", label, "), n=", nrow(overall), 
                      ", lambda=", round(lambda_overall, 3), sep = ""))

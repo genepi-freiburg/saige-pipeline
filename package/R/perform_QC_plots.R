@@ -51,7 +51,8 @@ perform_qc_plots <- function(file_pattern, out_prefix, file_sep=" ")
   
     # perform boxplots/histograms
     pdf(paste(png_file_prefix, "_box_hist.pdf", sep = ""))
-    par(mfcol=c(6,2), mar=rep(2,4), oma=rep(1,4))
+    #par(mfcol=c(6,2), mar=c(3,1,1,1), oma=c(1,1,1,1), mpg=c(1,0.5,0))
+    par(mfcol=c(3,2))
     
     boxplot(overall$BETA, 
             horizontal = T, 
@@ -65,18 +66,6 @@ perform_qc_plots <- function(file_pattern, out_prefix, file_sep=" ")
             horizontal = T, 
             xlab = paste("P-value (", label, "), n=", nrow(overall), sep = ""))
     
-    boxplot(overall$imputationInfo, 
-            horizontal = T, 
-            xlab = paste("Imputation quality (", label, "), n=", nrow(overall), sep = ""))
-    
-    boxplot(overall$AF_Allele2, 
-            horizontal = T, 
-            xlab = paste("Allele 2 frequency (", label, "), n=", nrow(overall), sep = ""))
-      
-    boxplot(overall$N, 
-            horizontal = T, 
-            xlab = paste("Sample size (", label, "), n=", nrow(overall), sep = ""))
-    
     hist(overall$BETA, 
          xlab = paste("Effect size (", label, ")", sep = ""),
          breaks = 100,
@@ -88,9 +77,21 @@ perform_qc_plots <- function(file_pattern, out_prefix, file_sep=" ")
          main = "", ylab = "")
     
     hist(overall$p.value, 
-         xlab = paste("P-value (", label, ")", sep = ""),
+         xlab = paste("P-value (", label, "), lambda = ", round(lambda_overall, 3), sep = ""),
          breaks = 100,
          main = "", ylab = "")
+
+    boxplot(overall$imputationInfo,
+            horizontal = T,
+            xlab = paste("Imputation quality (", label, "), n=", nrow(overall), sep = ""))
+
+    boxplot(overall$AF_Allele2,
+            horizontal = T,
+            xlab = paste("Allele 2 frequency (", label, "), n=", nrow(overall), sep = ""))
+
+    boxplot(overall$N,
+            horizontal = T,
+            xlab = paste("Sample size (", label, "), n=", nrow(overall), sep = ""))
     
     hist(overall$imputationInfo, 
          xlab = paste("Imputation quality (", label, ")", sep = ""),
@@ -107,17 +108,19 @@ perform_qc_plots <- function(file_pattern, out_prefix, file_sep=" ")
          breaks = 100,
          main = "", ylab = "")
     dev.off()
+
+    overall$CHR = as.factor(overall$CHR)
     
     # perform Manhattan plot
-    png(paste(png_file_prefix, "_manhattan.png", sep = ""), width=1000, height=500)
-    par(mfcol=c(1,1))
-    mh_title = paste("Manhattan plot (", label, "), n=", nrow(overall), 
-                     ", lambda=", round(lambda_overall, 3), sep = "")
-    manhattan.plot(overall$CHR, overall$POS, overall$p.value, main=mh_title)
-    dev.off()
+    #pdf(paste(png_file_prefix, "_manhattan.pdf", sep = ""))
+    #par(mfcol=c(1,1))
+    #mh_title = paste("Manhattan plot (", label, "), n=", nrow(overall), 
+    #                 ", lambda=", round(lambda_overall, 3), sep = "")
+    #manhattan.plot(overall$CHR, overall$POS, overall$p.value, main=mh_title)
+    #dev.off()
     
     # perform QQ plot
-    png(paste(png_file_prefix, "_qq.png", sep = ""), width=500, height=500)
+    pdf(paste(png_file_prefix, "_qq.pdf", sep = ""))
     qq_plot(overall$p.value, highlight=-log10(5e-8))
     title(main=paste("QQ plot (", label, "), n=", nrow(overall), 
                      ", lambda=", round(lambda_overall, 3), sep = ""))

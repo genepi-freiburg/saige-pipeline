@@ -14,6 +14,24 @@ then
 	exit
 fi
 
+if [[ "${BASE_DIRECTORY}" == */ ]]
+then
+	echo "Base directory '${BASE_DIRECTORY}' must not end with '/'."
+	exit
+fi
+
+if [ ! -d "${INSTALLATION_PATH}" ]
+then
+	echo "Installation path '${INSTALLATION_PATH}' not found."
+	exit
+fi
+
+if [[ "${INSTALLATION_PATH}" == */ ]]
+then
+	echo "Installation path '${INSTALLATION_PATH}' must not end with '/'."
+	exit
+fi
+
 if [ ! -f "${BASE_DIRECTORY}/${PHENO_FILE}" ]
 then
 	echo "Phenotype file '${BASE_DIRECTORY}/$PHENO_FILE' not found."
@@ -170,9 +188,25 @@ do
 	echo "xvfb-run Rscript ${JOB_R_FN} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 
 	echo "library(saigeutils)" >> ${JOB_R_FN}
-	echo "perform_qc_plots(\"${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt\"," >> ${JOB_R_FN}
+	RESULT_PATH_PATTERN="${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt"
+	echo "perform_qc_plots(\"${RESULT_PATH_PATTERN}\"," >> ${JOB_R_FN}
 	echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")" >> ${JOB_R_FN}
 
+	# check positive control
+	POSITIVE_CONTROL_VAR="POSITIVE_CONTROL_${PHENOTYPE_INDEX}"
+	POSITIVE_CONTROL_DATA=${!POSITIVE_CONTROL_VAR}
+	if [ "${POSITIVE_CONTROL_DATA}" != "" ]
+	then
+		JOB_INDEX=$((JOB_INDEX+1))
+		printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
+		JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-CheckPositiveControl-${PHENOTYPE}.sh"
+		LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-CheckPositiveControl-${PHENOTYPE}.log"
+		echo "${JOB_FN}" >> ${ALL_JOBS_FN}
+		echo "#/bin/bash" > ${JOB_FN}
+		echo "${INSTALLATION_PATH}/check_positive_control.sh ${RESULT_PATH_PATTERN} ${POSITIVE_CONTROL_DATA} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN} 
+	else
+		echo "No positive control found for phenotype ${PHENOTYPE_INDEX} (${PHENOTYPE})"
+	fi
 done
 
 echo "Done"

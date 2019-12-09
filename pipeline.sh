@@ -76,7 +76,13 @@ echo "Prepare directories and write sample file"
 JOB_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/jobs"
 LOGS_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/logs"
 NULL_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/nullModel"
+SPARSE_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/sparseGRM"
 QC_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/qc"
+
+if [ "${MODE}" == "GENE" ]
+then
+	mkdir -p ${SPARSE_DIR}
+fi
 
 mkdir -p ${JOB_DIR} ${QC_DIR} ${NULL_DIR} ${LOGS_DIR}
 
@@ -90,6 +96,37 @@ chmod 0755 ${ALL_JOBS_FN}
 
 echo "Write job files"
 JOB_INDEX="0"
+
+if [ "${MODE}" == "GENE" ]
+then
+	echo "Writing SparseGRM job (gene-based tests)"
+
+        JOB_INDEX=$((JOB_INDEX+1))
+        printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
+        JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-SparseGrm.sh"
+        LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-SparseGrm.log"
+        echo "${JOB_FN}" >> ${ALL_JOBS_FN}
+
+        if [ "${USE_DOCKER}" == "Y" ]
+        then
+                PREFIX="/data"
+                echo "docker run -v ${BASE_DIRECTORY}:/data \\" >> ${JOB_FN}
+                echo "    ${SAIGE_VERSION} \\" >> ${JOB_FN}
+                echo "    createSparseGRM.R \\" >> ${JOB_FN}
+        else
+                PREFIX=${BASE_DIRECTORY}
+                echo "${SAIGE_STEP0_PATH} \\" >> ${JOB_FN}
+        fi
+
+        echo "    --plinkFile=${PREFIX}/${PLINK_FILE} \\" >> ${JOB_FN}
+        echo "    --outputPrefix=${PREFIX}/${OUTPUT_DIR}/sparseGRM/${OUTPUT_PREFIX} \\" >> ${JOB_FN}
+        echo "    --nThreads=${NTHREADS} \\" >> ${JOB_FN}
+	echo "    --numRandomMarkerforSparseKin=2000 \\" >> ${JOB_FN}
+	echo "    --relatednessCutoff=0.125 \\" >> ${JOB_FN}
+        echo "    ${STEP0_ADDITIONAL_OPTIONS} \\" >> ${JOB_FN}
+        echo "    2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
+fi
+
 for PHENOTYPE_INDEX in `seq 1 ${PHENOTYPE_COUNT}`
 do
 	PHENOTYPE_VAR="PHENOTYPE_${PHENOTYPE_INDEX}"
@@ -131,6 +168,25 @@ do
 	echo "    --covarColList=${COVARCOLS} \\" >> ${JOB_FN}
 	echo "    --sampleIDColinphenoFile=${SAMPLE_ID_COL} \\" >> ${JOB_FN}
 	echo "    --outputPrefix=${PREFIX}/${OUTPUT_DIR}/nullModel/${PHENOTYPE} \\" >> ${JOB_FN}
+
+	if [ "${MODE}" == "GENE" ]
+	then
+		echo "Adding SparseGRM options to step 1 for gene-based tests."
+
+		#echo "    --outputPrefix_varRatio=${PREFIX}/${OUTPUT_DIR}/nullModel/${PHENOTYPE}_varRatio \\" >> ${JOB_FN}
+        	echo "    --sparseGRMFile=${PREFIX}/${OUTPUT_DIR}/sparseGRM/${OUTPUT_PREFIX}_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseGRM.mtx \\" >> ${JOB_FN}
+		echo "    --sparseGRMSampleIDFile=${PREFIX}/${OUTPUT_DIR}/${OUTPUT_PREFIX}_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt \\" >> ${JOB_FN}
+
+		if [ "${LOCO}" != "FALSE" ]
+		then
+			echo "WARNING: LOCO != FALSE is not recommended for gene-based tests."
+		fi
+
+	        echo "    --skipModelFitting=FALSE \\" >> ${JOB_FN}
+	        echo "    --IsSparseKin=TRUE \\" >> ${JOB_FN}
+	        echo "    --isCateVarianceRatio=TRUE \\" >> ${JOB_FN}
+	fi
+
 	echo "    --nThreads=${NTHREADS} \\" >> ${JOB_FN}
 	echo "    --LOCO=${LOCO} \\" >> ${JOB_FN}
 	echo "    --invNormalize=${INV_NORMALIZE} \\" >> ${JOB_FN}
@@ -164,7 +220,16 @@ do
 	        echo "    --bgenFileIndex=${PREFIX}/${BGEN_FN}.bgi \\" >> ${JOB_FN}
 	        echo "    --sampleFile=${PREFIX}/${OUTPUT_DIR}/my_sample_file.sample \\" >> ${JOB_FN}
 	        echo "    --minMAF=0.0001 \\" >> ${JOB_FN}
-	        echo "    --minMAC=1 \\" >> ${JOB_FN}
+	        echo "    --minMAC=0.5 \\" >> ${JOB_FN}
+
+	        if [ "${MODE}" == "GENE" ]
+        	then
+                	#echo "Adding options to step 2 for gene-based tests."
+			echo "    --maxMAFforGroupTest=0.01 \\" >> ${JOB_FN}
+			echo "    --IsSingleVarinGroupTest=TRUE \\" >> ${JOB_FN}
+			echo "    --groupFile=/${PREFIX}/${GROUP_FILE} \\" >> ${JOB_FN}
+		fi
+
 	        echo "    --GMMATmodelFile=${PREFIX}/${OUTPUT_DIR}/nullModel/${PHENOTYPE}.rda \\" >> ${JOB_FN}
 	        echo "    --varianceRatioFile=${PREFIX}/${OUTPUT_DIR}/nullModel/${PHENOTYPE}.varianceRatio.txt \\" >> ${JOB_FN}
 	        echo "    --numLinesOutput=${NUM_LINES_OF_OUTPUT} \\" >> ${JOB_FN}
@@ -176,6 +241,7 @@ do
 	done
 
 	# write plotting driver script
+	# TODO revise for gene-based tests
 	JOB_INDEX=$((JOB_INDEX+1))
 	printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
 	JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.sh"
@@ -193,6 +259,7 @@ do
 	echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")" >> ${JOB_R_FN}
 
 	# check positive control
+	# TODO revise for gene-based tests
 	POSITIVE_CONTROL_VAR="POSITIVE_CONTROL_${PHENOTYPE_INDEX}"
 	POSITIVE_CONTROL_DATA=${!POSITIVE_CONTROL_VAR}
 	if [ "${POSITIVE_CONTROL_DATA}" != "" ]

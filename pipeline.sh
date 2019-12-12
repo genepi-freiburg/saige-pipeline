@@ -175,7 +175,7 @@ do
 
 		#echo "    --outputPrefix_varRatio=${PREFIX}/${OUTPUT_DIR}/nullModel/${PHENOTYPE}_varRatio \\" >> ${JOB_FN}
         	echo "    --sparseGRMFile=${PREFIX}/${OUTPUT_DIR}/sparseGRM/${OUTPUT_PREFIX}_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseGRM.mtx \\" >> ${JOB_FN}
-		echo "    --sparseGRMSampleIDFile=${PREFIX}/${OUTPUT_DIR}/${OUTPUT_PREFIX}_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt \\" >> ${JOB_FN}
+		echo "    --sparseGRMSampleIDFile=${PREFIX}/${OUTPUT_DIR}/sparseGRM/${OUTPUT_PREFIX}_relatednessCutoff_0.125_2000_randomMarkersUsed.sparseGRM.mtx.sampleIDs.txt \\" >> ${JOB_FN}
 
 		if [ "${LOCO}" != "FALSE" ]
 		then
@@ -219,7 +219,7 @@ do
 	        echo "    --bgenFile=${PREFIX}/${BGEN_FN} \\" >> ${JOB_FN}
 	        echo "    --bgenFileIndex=${PREFIX}/${BGEN_FN}.bgi \\" >> ${JOB_FN}
 	        echo "    --sampleFile=${PREFIX}/${OUTPUT_DIR}/my_sample_file.sample \\" >> ${JOB_FN}
-	        echo "    --minMAF=0.0001 \\" >> ${JOB_FN}
+	        echo "    --minMAF=0.000001 \\" >> ${JOB_FN}
 	        echo "    --minMAC=0.5 \\" >> ${JOB_FN}
 
 	        if [ "${MODE}" == "GENE" ]

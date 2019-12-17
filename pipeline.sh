@@ -196,6 +196,7 @@ do
 	for CHR in `seq 1 22`
 	do
 	        BGEN_FN=`echo "${BGEN_FILE}" | sed s/%CHR%/$CHR/`
+		GROUP_FN=`echo "${GROUP_FILE}" | sed s/%CHR%/$CHR/`
 
 	        JOB_INDEX=$((JOB_INDEX+1))
         	printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
@@ -227,7 +228,7 @@ do
                 	#echo "Adding options to step 2 for gene-based tests."
 			echo "    --maxMAFforGroupTest=0.01 \\" >> ${JOB_FN}
 			echo "    --IsSingleVarinGroupTest=TRUE \\" >> ${JOB_FN}
-			echo "    --groupFile=/${PREFIX}/${GROUP_FILE} \\" >> ${JOB_FN}
+			echo "    --groupFile=${PREFIX}/${GROUP_FN} \\" >> ${JOB_FN}
 		fi
 
 	        echo "    --GMMATmodelFile=${PREFIX}/${OUTPUT_DIR}/nullModel/${PHENOTYPE}.rda \\" >> ${JOB_FN}

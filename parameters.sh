@@ -14,7 +14,8 @@ INSTALLATION_PATH=/data/studies/06_UKBB/Exome_50k/04_SAIGE/SAIGE/Pipeline
 PHENO_FILE=Exome_50k/04_SAIGE/SAIGE/SAIGE_20190722_eGFR/ckdgen-UKBB_500k_phenoGWAS-EA.txt
 
 # Path to group file, relative to BASE_DIRECTORY, don't use '..' (for docker)
-GROUP_FILE=Exome_50k/04_SAIGE/SAIGE_Gene/MarkerList/EXOME_FE_b38.genes.annot
+# Should use %CHR% placeholder
+GROUP_FILE=Exome_50k/04_SAIGE/SAIGE_Gene/MarkerList/saige_per_chr/EXOME_FE_b38.saige.chr%CHR%.txt
 
 # name of the sample ID column in the phenotype file
 SAMPLE_ID_COL=IID

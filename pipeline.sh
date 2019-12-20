@@ -244,6 +244,7 @@ do
 	# write plotting driver script / gene formatting script
 	JOB_INDEX=$((JOB_INDEX+1))
 	printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
+	RESULT_PATH_PATTERN="${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt"
 	if [ "${MODE}" == "GENE" ]
 	then
                 JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Formatting-${PHENOTYPE}.sh"
@@ -264,7 +265,6 @@ do
 		echo "xvfb-run Rscript ${JOB_R_FN} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 
 		echo "library(saigeutils)" >> ${JOB_R_FN}
-		RESULT_PATH_PATTERN="${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt"
 		echo "perform_qc_plots(\"${RESULT_PATH_PATTERN}\"," >> ${JOB_R_FN}
 		echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")" >> ${JOB_R_FN}
 	fi

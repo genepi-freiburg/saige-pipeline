@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ ! -f "$1" ]
 then
 	echo "Parameters file not found: $1"
@@ -5,6 +7,8 @@ then
 fi
 echo "Source parameters file: $1"
 . $1
+
+#####################################################################################
 
 echo -n "Check parameters: "
 
@@ -38,9 +42,6 @@ then
 	exit
 fi
 
-# TODO check SAMPLE_ID_COL
-# TODO check PHENOTYPE parameters
-
 if [ ! -f ${BASE_DIRECTORY}/${PLINK_FILE}.bed ]
 then
 	echo "PLINK .bed file '${BASE_DIRECTORY}/${PLINK_FILE}.bed' not found."
@@ -71,6 +72,42 @@ fi
 
 echo "OK."
 
+#####################################################################################
+
+for PHENOTYPE_INDEX in `seq 1 100`
+do
+        PHENOTYPE_VAR="PHENOTYPE_${PHENOTYPE_INDEX}"
+        TRAITTYPE_VAR="TRAITTYPE_${PHENOTYPE_INDEX}"
+        COVARCOLS_VAR="COVARCOLS_${PHENOTYPE_INDEX}"
+
+        PHENOTYPE=${!PHENOTYPE_VAR}
+        TRAITTYPE=${!TRAITTYPE_VAR}
+        COVARCOLS=${!COVARCOLS_VAR}
+
+        if [ "${PHENOTYPE}" != "" ]
+        then
+                echo "Detected phenotype #${PHENOTYPE_INDEX}: ${PHENOTYPE}"
+                PHENOTYPE_COUNT=${PHENOTYPE_INDEX}
+        else
+                echo "No more phenotypes (got ${PHENOTYPE_COUNT})."
+                break
+        fi
+
+        if [ "${TRAITTYPE}" == "" ]
+        then
+                echo "Trait type ${TRAITTYPE_VAR} not given!"
+                exit
+        fi
+
+        if [ "${COVARCOLS}" == "" ]
+        then
+                echo "Covariables ${COVARCOLS_VAR} not given!"
+                exit
+        fi
+done
+
+#####################################################################################
+
 echo "Prepare directories and write sample file"
 
 JOB_DIR="${BASE_DIRECTORY}/${OUTPUT_DIR}/jobs"
@@ -89,6 +126,8 @@ mkdir -p ${JOB_DIR} ${QC_DIR} ${NULL_DIR} ${LOGS_DIR}
 cat ${BASE_DIRECTORY}/${SAMPLE_FILE} | \
         grep -v '#' \
 	> ${BASE_DIRECTORY}/${OUTPUT_DIR}/my_sample_file.sample
+
+#####################################################################################
 
 ALL_JOBS_FN="${JOB_DIR}/000-ALL_JOBS.sh"
 echo "#/bin/bash" > ${ALL_JOBS_FN}
@@ -126,6 +165,8 @@ then
         echo "    ${STEP0_ADDITIONAL_OPTIONS} \\" >> ${JOB_FN}
         echo "    2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 fi
+
+#####################################################################################
 
 for PHENOTYPE_INDEX in `seq 1 ${PHENOTYPE_COUNT}`
 do
@@ -193,6 +234,8 @@ do
 	echo "    ${STEP1_ADDITIONAL_OPTIONS} \\" >> ${JOB_FN}
 	echo "    2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 
+#####################################################################################
+
 	for CHR in `seq 1 22`
 	do
 	        BGEN_FN=`echo "${BGEN_FILE}" | sed s/%CHR%/$CHR/`
@@ -241,6 +284,8 @@ do
 		echo "    2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 	done
 
+#####################################################################################
+
 	# write plotting driver script / gene formatting script
 	JOB_INDEX=$((JOB_INDEX+1))
 	printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
@@ -268,6 +313,8 @@ do
 		echo "perform_qc_plots(\"${RESULT_PATH_PATTERN}\"," >> ${JOB_R_FN}
 		echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")" >> ${JOB_R_FN}
 	fi
+
+#####################################################################################
 
 	# check positive control
 	POSITIVE_CONTROL_VAR="POSITIVE_CONTROL_${PHENOTYPE_INDEX}"

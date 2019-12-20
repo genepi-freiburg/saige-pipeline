@@ -20,9 +20,6 @@ GROUP_FILE=Exome_50k/04_SAIGE/SAIGE_Gene/MarkerList/saige_per_chr/EXOME_FE_b38.s
 # name of the sample ID column in the phenotype file
 SAMPLE_ID_COL=IID
 
-# number of phenotypes to analyse (next block for each of them)
-PHENOTYPE_COUNT=2
-
 # first phenotype: column name, trait type (quantitative/binary), covariates
 PHENOTYPE_1=egfr_ckdepi_creat
 TRAITTYPE_1=quantitative

@@ -1,0 +1,5 @@
+calc_lambda             Calculates the lambda value.
+manhattan.plot          Performs a Manhattan plot.
+perform_qc_plots        Performs box plots, histograms, Manhattan and
+                        QQ plot (unfiltered, MAF >1%/INF >0.4 and MAF
+                        >5%/INF >0.8.

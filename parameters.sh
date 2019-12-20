@@ -54,7 +54,8 @@ INV_NORMALIZE=FALSE
 USE_DOCKER=Y
 
 # if using Docker, container version
-SAIGE_VERSION=wzhou88/saige:0.35.8.2
+SAIGE_VERSION=wzhou88/saige:0.36.2
+#SAIGE_VERSION=wzhou88/saige:0.35.8.2
 
 # if not using Docker, paths to step* R scripts (incl. RScript)
 # Step 0: createSparseGRM.R, step 1: step1_fitNULLGLMM.R, step 2: step2_SPAtests.R

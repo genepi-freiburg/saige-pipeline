@@ -241,26 +241,35 @@ do
 		echo "    2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
 	done
 
-	# write plotting driver script
-	# TODO revise for gene-based tests
+	# write plotting driver script / gene formatting script
 	JOB_INDEX=$((JOB_INDEX+1))
 	printf -v JOB_INDEX_PADDED "%03d" ${JOB_INDEX}
-	JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.sh"
-	JOB_R_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.R"
-	LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.log"
-        echo "${JOB_FN}" >> ${ALL_JOBS_FN}
+	if [ "${MODE}" == "GENE" ]
+	then
+                JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Formatting-${PHENOTYPE}.sh"
+                LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-Formatting-${PHENOTYPE}.log"
+                echo "${JOB_FN}" >> ${ALL_JOBS_FN}
 
-        echo "#/bin/bash" > ${JOB_FN}
-        chmod 0755 ${JOB_FN}
-	echo "xvfb-run Rscript ${JOB_R_FN} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
+                echo "#/bin/bash" > ${JOB_FN}
+                chmod 0755 ${JOB_FN}
+                echo "${INSTALLATION_PATH}/annotate_gene_results.sh ${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE} ${INSTALLATION_PATH} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
+	else
+		JOB_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.sh"
+		JOB_R_FN="${JOB_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.R"
+		LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-Plotting-${PHENOTYPE}.log"
+        	echo "${JOB_FN}" >> ${ALL_JOBS_FN}
 
-	echo "library(saigeutils)" >> ${JOB_R_FN}
-	RESULT_PATH_PATTERN="${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt"
-	echo "perform_qc_plots(\"${RESULT_PATH_PATTERN}\"," >> ${JOB_R_FN}
-	echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")" >> ${JOB_R_FN}
+        	echo "#/bin/bash" > ${JOB_FN}
+        	chmod 0755 ${JOB_FN}
+		echo "xvfb-run Rscript ${JOB_R_FN} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN}
+
+		echo "library(saigeutils)" >> ${JOB_R_FN}
+		RESULT_PATH_PATTERN="${BASE_DIRECTORY}/${OUTPUT_DIR}/results/${PHENOTYPE}/${OUTPUT_PREFIX}${PHENOTYPE}-chr%CHR%.txt"
+		echo "perform_qc_plots(\"${RESULT_PATH_PATTERN}\"," >> ${JOB_R_FN}
+		echo "   \"${BASE_DIRECTORY}/${OUTPUT_DIR}/qc/${PHENOTYPE}_qc\")" >> ${JOB_R_FN}
+	fi
 
 	# check positive control
-	# TODO revise for gene-based tests
 	POSITIVE_CONTROL_VAR="POSITIVE_CONTROL_${PHENOTYPE_INDEX}"
 	POSITIVE_CONTROL_DATA=${!POSITIVE_CONTROL_VAR}
 	if [ "${POSITIVE_CONTROL_DATA}" != "" ]
@@ -271,7 +280,7 @@ do
 		LOG_FN="${LOGS_DIR}/${JOB_INDEX_PADDED}-CheckPositiveControl-${PHENOTYPE}.log"
 		echo "${JOB_FN}" >> ${ALL_JOBS_FN}
 		echo "#/bin/bash" > ${JOB_FN}
-		echo "${INSTALLATION_PATH}/check_positive_control.sh ${RESULT_PATH_PATTERN} ${POSITIVE_CONTROL_DATA} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN} 
+		echo "${INSTALLATION_PATH}/check_positive_control.sh ${RESULT_PATH_PATTERN} ${POSITIVE_CONTROL_DATA} ${MODE} 2>&1 | tee ${LOG_FN}" >> ${JOB_FN} 
 	else
 		echo "No positive control found for phenotype ${PHENOTYPE_INDEX} (${PHENOTYPE})"
 	fi

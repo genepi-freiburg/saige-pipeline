@@ -149,12 +149,12 @@ then
         if [ "${USE_DOCKER}" == "Y" ]
         then
                 PREFIX="/data"
-                echo "docker run -v ${BASE_DIRECTORY}:/data \\" >> ${JOB_FN}
+                echo "docker run -v ${BASE_DIRECTORY}:/data \\" > ${JOB_FN}
                 echo "    ${SAIGE_VERSION} \\" >> ${JOB_FN}
                 echo "    createSparseGRM.R \\" >> ${JOB_FN}
         else
                 PREFIX=${BASE_DIRECTORY}
-                echo "${SAIGE_STEP0_PATH} \\" >> ${JOB_FN}
+                echo "${SAIGE_STEP0_PATH} \\" > ${JOB_FN}
         fi
 
         echo "    --plinkFile=${PREFIX}/${PLINK_FILE} \\" >> ${JOB_FN}
